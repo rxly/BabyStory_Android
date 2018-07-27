@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">BabyStore</string>
-    <string name="title_home">Home</string>
-    <string name="title_dashboard">Dashboard</string>
-    <string name="title_notifications">Notifications</string>
+    <string name="device">设备</string>
+    <string name="content">内容</string>
+    <string name="my_account">我的</string>
+    <string name="wifi_config">网络设置</string>
 </resources>
