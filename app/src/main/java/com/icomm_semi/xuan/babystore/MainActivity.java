@@ -1,30 +1,66 @@
 package com.icomm_semi.xuan.babystore;
 
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.view.Window;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.icomm_semi.xuan.babystore.fragment.AccountFragment;
+import com.icomm_semi.xuan.babystore.fragment.AudioViewFragment;
+import com.icomm_semi.xuan.babystore.fragment.DeviceFragment;
+
 public class MainActivity extends AppCompatActivity {
+    private DeviceFragment devFragment;
+    private Fragment audioFragment;
+    private Fragment accountFragment;
+    private Fragment fragmentList[]= null;
+    private int actionFragment = 0;
+    private Controler mMqttCtrl;
+    private Handler mHandler;
 
-
-
-    private MainHandler mHandler;
-    private FloatingActionButton addBtn;
-    private LinearLayout addMenuLayout;
-    private FloatingActionButton wifiCfgBtn;
-
-    private Boolean isAddMenuShow = false;
+    private class MainHandler extends Handler{
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what){
+                case GlobalInfo.MSG_MQTT_CONNECT_START:
+                    Log.i("rx","start conncet MQTT");
+                    devFragment.setConState(R.string.connceting_server);
+                    break;
+                case GlobalInfo.MSG_MQTT_CONNECT_SUCCESS:
+                    Log.i("rx","conncet MQTT success");
+                    devFragment.setConState(R.string.connceted_server);
+                    mMqttCtrl.scanDev();
+                    break;
+                case GlobalInfo.MSG_MQTT_CONNECT_FAIL:
+                    Log.i("rx","start conncet MQTT false");
+                    devFragment.setConState(R.string.disconnceted_server);
+                    break;
+                case GlobalInfo.MSG_MQTT_SCAN_START:
+                    devFragment.setConState(R.string.connceting_dev);
+                    Log.i("rx","start scan dev ");
+                    break;
+                case GlobalInfo.MSG_MQTT_SCAN_END:
+                    DevInfo dev = (DevInfo)msg.obj;
+                    String sta = new String("已连接到："+dev.getDevName());
+                    devFragment.setConState(sta);
+                    Log.i("rx","stop scan dev ");
+                    mMqttCtrl.scanLocalList();
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -32,14 +68,14 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
             switch (item.getItemId()) {
-                case R.id.navigation_dev:
-                    mHandler.obtainMessage(GlobalInfo.MSG_NAVIGATION_DEV).sendToTarget();
+                case R.id.navigation_home:
+                    switchFragment(0);
                     return true;
-                case R.id.navigation_content:
-                    mHandler.obtainMessage(GlobalInfo.MSG_NAVIGATION_CONTENT).sendToTarget();
+                case R.id.navigation_dashboard:
+                    switchFragment(1);
                     return true;
-                case R.id.navigation_account:
-                    mHandler.obtainMessage(GlobalInfo.MSG_NAVIGATION_ACCOUNT).sendToTarget();
+                case R.id.navigation_notifications:
+                    switchFragment(2);
                     return true;
             }
             return false;
@@ -49,74 +85,53 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_main);
-
+        mHandler = new MainHandler();
+        initFragment();
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
-
-        addMenuLayout = (LinearLayout)findViewById(R.id.wifiConfigLayout);
-
-        addBtn = (FloatingActionButton)findViewById(R.id.addBtn);
-        addBtn.setOnClickListener(new MainOnClickListen());
-        wifiCfgBtn = (FloatingActionButton)findViewById(R.id.wifiCfgBtn);
-        wifiCfgBtn.setOnClickListener(new MainOnClickListen());
-
-        mHandler = new MainHandler();
+        initControl();
     }
 
-    private class MainOnClickListen implements View.OnClickListener{
-        @Override
-        public void onClick(View view) {
-            switch (view.getId()) {
-                case R.id.addBtn:
-                    if(isAddMenuShow){
-                        addMenuLayout.setVisibility(View.GONE);
-                        addBtn.setImageResource(R.mipmap.add);
-                        isAddMenuShow = false;
-                    }
-                    else {
-                        addMenuLayout.setVisibility(View.VISIBLE);
-                        addBtn.setImageResource(R.mipmap.close);
-                        isAddMenuShow = true;
-                    }
-                    break;
-                case R.id.wifiCfgBtn:
-                    addMenuLayout.setVisibility(View.GONE);
-                    //addBtn.hide();
-                    Snackbar.make(view, "No implete \nStart AirKiss wifi config", Snackbar.LENGTH_LONG)
-                            .setAction("Action", null).show();
-                    break;
-                default:
-                    break;
-            }
+    private void initFragment(){
+        devFragment = new DeviceFragment();
+        accountFragment = new AccountFragment();
+        audioFragment = new AudioViewFragment();
+        fragmentList = new Fragment[]{devFragment,audioFragment,accountFragment};
+
+        actionFragment = 0;
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragmentLayout,fragmentList[actionFragment]).show(fragmentList[actionFragment]).commit();
+    }
+
+    public void switchFragment(int idx){
+        if(idx == actionFragment){
+            return;
         }
-    }
-
-
-    private class  MainHandler extends Handler{
-        @Override
-        public void handleMessage(Message msg) {
-            switch (msg.what){
-                case GlobalInfo.MSG_NAVIGATION_DEV:
-                    Log.i("rx","Get msg:MSG_NAVIGATION_DEV");
-                    addBtn.show();
-                    break;
-                case GlobalInfo.MSG_NAVIGATION_CONTENT:
-                    Log.i("rx","Get msg:MSG_NAVIGATION_CONTENT");
-                    addBtn.hide();
-                    break;
-                case GlobalInfo.MSG_NAVIGATION_ACCOUNT:
-                    Log.i("rx","Get msg:MSG_NAVIGATION_ACCOUNT");
-                    addBtn.hide();
-                    break;
-                case GlobalInfo.MSG_MQTT_CONNECT_SUCCESS:
-
-                    break;
-                default:
-                    break;
-            }
+        FragmentTransaction transaction =getSupportFragmentManager().beginTransaction();
+        transaction.hide(fragmentList[actionFragment]);
+        if(fragmentList[idx].isAdded()==false)
+        {
+            transaction.add(R.id.fragmentLayout,fragmentList[idx]);
         }
+        actionFragment = idx;
+        transaction.show(fragmentList[idx]).commitAllowingStateLoss();
     }
 
+    public void initControl(){
+        mMqttCtrl = Controler.getInstance();
+        mMqttCtrl.setHandler(mHandler);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                mMqttCtrl.conncet();
+            }
+        }).start();
+    }
+
+    @Override
+    protected void onDestroy() {
+        if(mMqttCtrl.isAlive())
+            mMqttCtrl.disconncet();
+        super.onDestroy();
+    }
 }

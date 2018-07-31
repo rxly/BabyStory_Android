@@ -1,6 +1,6 @@
 package com.icomm_semi.xuan.babystore;
 
-public class Dev {
+public class DevInfo {
     private String devName;
     private int batteryLevel;
 

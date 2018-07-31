@@ -1,0 +1,12 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.icomm_semi.xuan.demo.MainActivity">
+    <item
+        android:id="@+id/wifiConfig"
+        android:orderInCategory="100"
+        android:icon="@mipmap/wifi"
+        android:title="@string/wifi_config"
+        app:showAsAction="never" />
+
+</menu>

@@ -1,8 +1,8 @@
 package com.icomm_semi.xuan.babystore;
 
-import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 
 import org.eclipse.paho.client.mqttv3.IMqttMessageListener;
 import org.eclipse.paho.client.mqttv3.MqttClient;
@@ -14,34 +14,40 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class Controler {
     private final String clientid = "gushiji_demo";
     private static Controler gInstance = null;
     private Handler mHandler;
-    private int qos = 2;
+    private int qos = 1;
 
-    private String TOPIC_PUB_SCAN_DEV = "ScanDev";
-    private String TOPIC_SUB_DEV_STATE = "DevState";
+    private String TOPIC_REQ_SCAN_DEV = "DeviceScanReq";
+    private String TOPIC_REQ_DOWNLOAD = "DownloadFileReq";
+    private String TOPIC_REQ_LOCAL_LIST = "PlayListReq";
+
+    private String TOPIC_RESP_SCAN_DEV = "DeviceScanResp";
+    private String TOPIC_RESP_DOWNLOAD = "DownloadFileResp";
+    private String TOPIC_RESP_LOCAL_LIST = "PlayListResp";
 
     private MqttClient mClient;
 
-    private Controler(Handler handler){
-        mHandler = handler;
+    private Controler(){}
+
+    public void setHandler(Handler handler) {
+        this.mHandler = handler;
     }
 
-    public static Controler getInstance(Handler handler){
+    public static Controler getInstance(){
         if(gInstance == null){
-            gInstance = new Controler(handler);
-            gInstance.init();
+            gInstance = new Controler();
         }
         return gInstance;
     }
 
-    public void init(){
+    public void conncet(){
         MemoryPersistence persistence = new MemoryPersistence();
         try {
+            mHandler.obtainMessage(GlobalInfo.MSG_MQTT_CONNECT_START).sendToTarget();
             mClient = new MqttClient(Key.MQTT_SERVER,clientid,persistence);
             MqttConnectOptions con = new MqttConnectOptions();
             con.setKeepAliveInterval(10);
@@ -50,6 +56,10 @@ public class Controler {
             con.setCleanSession(true);
             mClient.connect(con);
             mHandler.obtainMessage(GlobalInfo.MSG_MQTT_CONNECT_SUCCESS).sendToTarget();
+
+            gInstance.subscribe(TOPIC_RESP_SCAN_DEV,new mqttMsgArray());
+            gInstance.subscribe(TOPIC_RESP_LOCAL_LIST,new mqttMsgArray());
+
         } catch (MqttException e) {
             mHandler.obtainMessage(GlobalInfo.MSG_MQTT_CONNECT_FAIL).sendToTarget();
             e.printStackTrace();
@@ -94,13 +104,26 @@ public class Controler {
     }
 
     public boolean scanDev(){
-        ArrayList<Dev>  devList = new ArrayList<>();
+        ArrayList<DevInfo>  devList = new ArrayList<>();
         mHandler.obtainMessage(GlobalInfo.MSG_MQTT_SCAN_START).sendToTarget();
-        gInstance.subscribe(TOPIC_SUB_DEV_STATE,new mqttMsgArray());
         JSONObject obj = new JSONObject();
         try {
             obj.put("name","Android_app");
-            gInstance.publish(TOPIC_PUB_SCAN_DEV,obj.toString());
+            gInstance.publish(TOPIC_REQ_SCAN_DEV,obj.toString());
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return false;
+        }
+        return true;
+    }
+
+    public boolean scanLocalList(){
+        ArrayList<DevInfo>  devList = new ArrayList<>();
+//        mHandler.obtainMessage(GlobalInfo.MSG_MQTT_SCAN_).sendToTarget();
+        JSONObject obj = new JSONObject();
+        try {
+            obj.put("locallist","Android_app");
+            gInstance.publish(TOPIC_REQ_LOCAL_LIST,obj.toString());
         } catch (JSONException e) {
             e.printStackTrace();
             return false;
@@ -109,17 +132,21 @@ public class Controler {
     }
 
     private class mqttMsgArray implements IMqttMessageListener{
-
         @Override
         public void messageArrived(String s, MqttMessage mqttMessage) throws Exception {
-            if(s.equals(TOPIC_SUB_DEV_STATE)){
-                Dev dev = new Dev();
-                JSONObject obj = new JSONObject(new String(mqttMessage.getPayload()));
-                dev.setDevName(obj.getString("name"));
-                dev.setBatteryLevel(obj.getInt("battery_level"));
+
+            if(s.equals(TOPIC_RESP_SCAN_DEV)){
+                String content = new String(mqttMessage.getPayload());
+                Log.i("rx","Topic:"+ s + "   payload:\n"+content);
+                DevInfo dev = DataModel.getDevInfo(content);
                 Message msg = new Message();
                 msg.obj = dev;
+                msg.what = GlobalInfo.MSG_MQTT_SCAN_END;
                 mHandler.sendMessage(msg);
+            }else if(s.equals(TOPIC_RESP_LOCAL_LIST)){
+                String content = new String(mqttMessage.getPayload());
+                Log.i("rx","Topic:"+ s + "   payload:\n"+content);
+
             }
         }
     }

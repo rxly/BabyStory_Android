@@ -3,5 +3,17 @@
     <string name="device">设备</string>
     <string name="content">内容</string>
     <string name="my_account">我的</string>
-    <string name="wifi_config">网络设置</string>
+    <string name="wifi_config">网络配置</string>
+    <string name="connceting_server">正在连接服务器...</string>
+    <string name="connceted_server">已连接上服务器</string>
+    <string name="disconnceted_server">未连接上服务器，请检查网络连接</string>
+
+    <string name="connceting_dev">正在连接故事机...</string>
+    <string name="connceted_dev">已连接上故事机</string>
+
+
+    <string name="title_activity_main">MainActivity</string>
+    <string name="title_dev">设备</string>
+    <string name="title_resource">资源</string>
+    <string name="title_myaccount">我的</string>
 </resources>

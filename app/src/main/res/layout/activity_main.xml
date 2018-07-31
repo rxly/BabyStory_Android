@@ -7,6 +7,11 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
+    <FrameLayout
+        android:id="@+id/fragmentLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"></FrameLayout>
+
     <android.support.design.widget.BottomNavigationView
         android:id="@+id/navigation"
         android:layout_width="0dp"
@@ -19,40 +24,4 @@
         app:layout_constraintRight_toRightOf="parent"
         app:menu="@menu/navigation" />
 
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/addBtn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="92dp"
-        android:layout_marginEnd="32dp"
-        android:backgroundTint="@color/colorAccent"
-        android:src="@mipmap/add"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-
-    <LinearLayout
-        android:id="@+id/wifiConfigLayout"
-        android:layout_width="119dp"
-        android:layout_height="41dp"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="8dp"
-        android:orientation="horizontal"
-        android:visibility="invisible"
-        app:layout_constraintBottom_toTopOf="@+id/addBtn"
-        app:layout_constraintEnd_toEndOf="parent">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:text="@string/wifi_config" />
-
-        <android.support.design.widget.FloatingActionButton
-            android:id="@+id/wifiCfgBtn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:backgroundTint="@color/colorAccent"
-            android:src="@mipmap/wifi"
-            app:fabSize="mini" />
-    </LinearLayout>
 </android.support.constraint.ConstraintLayout>
