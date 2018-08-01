@@ -4,6 +4,8 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 
+import com.icomm_semi.xuan.babystore.IdaView.AudioItem;
+
 import org.eclipse.paho.client.mqttv3.IMqttMessageListener;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
@@ -28,6 +30,7 @@ public class Controler {
     private String TOPIC_RESP_SCAN_DEV = "DeviceScanResp";
     private String TOPIC_RESP_DOWNLOAD = "DownloadFileResp";
     private String TOPIC_RESP_LOCAL_LIST = "PlayListResp";
+    private String TOPIC_RESP_DISCONNECT = "DevDisconnect";
 
     private MqttClient mClient;
 
@@ -59,7 +62,7 @@ public class Controler {
 
             gInstance.subscribe(TOPIC_RESP_SCAN_DEV,new mqttMsgArray());
             gInstance.subscribe(TOPIC_RESP_LOCAL_LIST,new mqttMsgArray());
-
+            gInstance.subscribe(TOPIC_RESP_DISCONNECT,new mqttMsgArray());
         } catch (MqttException e) {
             mHandler.obtainMessage(GlobalInfo.MSG_MQTT_CONNECT_FAIL).sendToTarget();
             e.printStackTrace();
@@ -131,6 +134,17 @@ public class Controler {
         return true;
     }
 
+    public boolean downloadFile(final AudioItem audio){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                gInstance.publish(TOPIC_REQ_DOWNLOAD,DataModel.getDownloadInfo(audio));
+            }
+        }).start();
+
+        return true;
+    }
+
     private class mqttMsgArray implements IMqttMessageListener{
         @Override
         public void messageArrived(String s, MqttMessage mqttMessage) throws Exception {
@@ -147,6 +161,10 @@ public class Controler {
                 String content = new String(mqttMessage.getPayload());
                 Log.i("rx","Topic:"+ s + "   payload:\n"+content);
 
+            }else if(s.equals(TOPIC_RESP_DISCONNECT)){
+                String content = new String(mqttMessage.getPayload());
+                Log.i("rx","Topic:"+ s + "   payload:\n"+content);
+                mHandler.obtainMessage(GlobalInfo.MSG_MQTT_DEV_DISCONNECT).sendToTarget();
             }
         }
     }

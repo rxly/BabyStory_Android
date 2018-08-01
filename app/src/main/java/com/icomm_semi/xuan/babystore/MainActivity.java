@@ -14,6 +14,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.Window;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.icomm_semi.xuan.babystore.fragment.AccountFragment;
 import com.icomm_semi.xuan.babystore.fragment.AudioViewFragment;
@@ -55,6 +56,9 @@ public class MainActivity extends AppCompatActivity {
                     devFragment.setConState(sta);
                     Log.i("rx","stop scan dev ");
                     mMqttCtrl.scanLocalList();
+                    break;
+                case GlobalInfo.MSG_MQTT_DEV_DISCONNECT:
+                    Toast.makeText(MainActivity.this,"故事机已经断线",Toast.LENGTH_SHORT).show();
                     break;
                 default:
                     break;

@@ -12,4 +12,5 @@ public class GlobalInfo {
     public final static int MSG_MQTT_PUB_FAIL = 0x20000005;
     public final static int MSG_MQTT_SCAN_START = 0x20000006;
     public final static int MSG_MQTT_SCAN_END = 0x20000007;
+    public final static int MSG_MQTT_DEV_DISCONNECT = 0x20000008;
 }
