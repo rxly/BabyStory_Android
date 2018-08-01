@@ -1,4 +1,4 @@
-package com.icomm_semi.xuan.babystore.IdaView;
+package com.icomm_semi.xuan.babystore.View;
 
 import android.graphics.Bitmap;
 

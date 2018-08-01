@@ -1,4 +1,4 @@
-package com.icomm_semi.xuan.babystore.fragment;
+package com.icomm_semi.xuan.babystore.View.fragment;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;

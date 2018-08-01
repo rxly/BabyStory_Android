@@ -1,6 +1,5 @@
-package com.icomm_semi.xuan.babystore;
+package com.icomm_semi.xuan.babystore.View;
 
-import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -9,16 +8,18 @@ import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
+import android.system.Os;
 import android.util.Log;
-import android.view.Menu;
 import android.view.MenuItem;
-import android.view.Window;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import com.icomm_semi.xuan.babystore.fragment.AccountFragment;
-import com.icomm_semi.xuan.babystore.fragment.AudioViewFragment;
-import com.icomm_semi.xuan.babystore.fragment.DeviceFragment;
+import com.icomm_semi.xuan.babystore.Controler;
+import com.icomm_semi.xuan.babystore.DevInfo;
+import com.icomm_semi.xuan.babystore.GlobalInfo;
+import com.icomm_semi.xuan.babystore.R;
+import com.icomm_semi.xuan.babystore.View.fragment.AccountFragment;
+import com.icomm_semi.xuan.babystore.View.fragment.AudioViewFragment;
+import com.icomm_semi.xuan.babystore.View.fragment.DeviceFragment;
 
 public class MainActivity extends AppCompatActivity {
     private DeviceFragment devFragment;
@@ -28,6 +29,7 @@ public class MainActivity extends AppCompatActivity {
     private int actionFragment = 0;
     private Controler mMqttCtrl;
     private Handler mHandler;
+    private long startTime = 0;
 
     private class MainHandler extends Handler{
         @Override
@@ -59,6 +61,19 @@ public class MainActivity extends AppCompatActivity {
                     break;
                 case GlobalInfo.MSG_MQTT_DEV_DISCONNECT:
                     Toast.makeText(MainActivity.this,"故事机已经断线",Toast.LENGTH_SHORT).show();
+                    break;
+                case GlobalInfo.MSG_MQTT_DEV_ONLINE:
+                    mMqttCtrl.scanDev();
+                    Toast.makeText(MainActivity.this,(String)msg.obj+"上线",Toast.LENGTH_SHORT).show();
+                    break;
+                case GlobalInfo.MSG_MQTT_DOWNLOAD_START:
+                    startTime = System.currentTimeMillis();
+                    Toast.makeText(MainActivity.this,"文件:"+(String)msg.obj+"开始下载...",Toast.LENGTH_SHORT).show();
+                    break;
+                case GlobalInfo.MSG_MQTT_DOWNLOAD_COMPLETE:
+                    long endTime = System.currentTimeMillis();
+                    long costTime = (endTime - startTime)/1000;
+                    Toast.makeText(MainActivity.this,"文件:"+(String)msg.obj+"下载完成\n耗时:"+costTime,Toast.LENGTH_LONG).show();
                     break;
                 default:
                     break;

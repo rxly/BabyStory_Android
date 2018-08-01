@@ -2,9 +2,10 @@ package com.icomm_semi.xuan.babystore;
 
 import android.os.Handler;
 import android.os.Message;
+import android.util.JsonReader;
 import android.util.Log;
 
-import com.icomm_semi.xuan.babystore.IdaView.AudioItem;
+import com.icomm_semi.xuan.babystore.View.AudioItem;
 
 import org.eclipse.paho.client.mqttv3.IMqttMessageListener;
 import org.eclipse.paho.client.mqttv3.MqttClient;
@@ -28,9 +29,10 @@ public class Controler {
     private String TOPIC_REQ_LOCAL_LIST = "PlayListReq";
 
     private String TOPIC_RESP_SCAN_DEV = "DeviceScanResp";
-    private String TOPIC_RESP_DOWNLOAD = "DownloadFileResp";
+    private String TOPIC_RESP_DOWNLOAD = "DownloadStateResp";
     private String TOPIC_RESP_LOCAL_LIST = "PlayListResp";
     private String TOPIC_RESP_DISCONNECT = "DevDisconnect";
+    private String TOPIC_RESP_ONLINE = "OnlineNotification";
 
     private MqttClient mClient;
 
@@ -59,10 +61,13 @@ public class Controler {
             con.setCleanSession(true);
             mClient.connect(con);
             mHandler.obtainMessage(GlobalInfo.MSG_MQTT_CONNECT_SUCCESS).sendToTarget();
+            mqttMsgArray msgArray = new mqttMsgArray();
+            gInstance.subscribe(TOPIC_RESP_SCAN_DEV,msgArray);
+            gInstance.subscribe(TOPIC_RESP_LOCAL_LIST,msgArray);
+            gInstance.subscribe(TOPIC_RESP_DISCONNECT,msgArray);
+            gInstance.subscribe(TOPIC_RESP_ONLINE,msgArray);
+            gInstance.subscribe(TOPIC_RESP_DOWNLOAD,msgArray);
 
-            gInstance.subscribe(TOPIC_RESP_SCAN_DEV,new mqttMsgArray());
-            gInstance.subscribe(TOPIC_RESP_LOCAL_LIST,new mqttMsgArray());
-            gInstance.subscribe(TOPIC_RESP_DISCONNECT,new mqttMsgArray());
         } catch (MqttException e) {
             mHandler.obtainMessage(GlobalInfo.MSG_MQTT_CONNECT_FAIL).sendToTarget();
             e.printStackTrace();
@@ -138,7 +143,7 @@ public class Controler {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                gInstance.publish(TOPIC_REQ_DOWNLOAD,DataModel.getDownloadInfo(audio));
+                gInstance.publish(TOPIC_REQ_DOWNLOAD, DataModel.getDownloadInfo(audio));
             }
         }).start();
 
@@ -165,6 +170,30 @@ public class Controler {
                 String content = new String(mqttMessage.getPayload());
                 Log.i("rx","Topic:"+ s + "   payload:\n"+content);
                 mHandler.obtainMessage(GlobalInfo.MSG_MQTT_DEV_DISCONNECT).sendToTarget();
+            }else if(s.equals(TOPIC_RESP_ONLINE)){
+                String content = new String(mqttMessage.getPayload());
+                Log.i("rx","Topic:"+ s + "   payload:\n"+content);
+                Message msg = new Message();
+                msg.what = GlobalInfo.MSG_MQTT_DEV_ONLINE;
+                msg.obj = content;
+                mHandler.sendMessage(msg);
+            }else if(s.equals(TOPIC_RESP_DOWNLOAD)){
+                String content = new String(mqttMessage.getPayload());
+                Log.i("rx","Topic:"+ s + "   payload:\n"+content);
+                JSONObject jroot= new JSONObject(content);
+                JSONObject jitem = jroot.getJSONObject("download");
+                String state = jitem.getString("state");
+                String name = jitem.getString("name");
+                Message msg = new Message();
+                Log.i("rx","state:"+state);
+                Log.i("rx","name:"+name);
+                if(state.equals("start")){
+                    msg.what = GlobalInfo.MSG_MQTT_DOWNLOAD_START;
+                }else if (state.equals("end")){
+                    msg.what = GlobalInfo.MSG_MQTT_DOWNLOAD_COMPLETE;
+                }
+                msg.obj = name;
+                mHandler.sendMessage(msg);
             }
         }
     }

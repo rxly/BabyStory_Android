@@ -1,4 +1,4 @@
-package com.icomm_semi.xuan.babystore.HttpControl;
+package com.icomm_semi.xuan.babystore;
 
 import java.security.MessageDigest;
 

@@ -5,14 +5,29 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".IdaView.AudioListActivity">
+    tools:context=".View.AudioListActivity">
 
-    <ImageView
-        android:id="@+id/audioIcon"
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/audiolistToolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="3"
-        />
+        android:background="@color/colorPrimary"
+        app:popupTheme="@style/ToolbarPopupTheme">
+
+        <ImageView
+            android:id="@+id/audioBarBack"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@mipmap/back"/>
+
+        <TextView
+            android:id="@+id/audiolistTitle"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:textSize="20sp"
+            android:gravity="center"/>
+
+    </android.support.v7.widget.Toolbar>
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/audioList"

@@ -3,6 +3,9 @@
     package="com.icomm_semi.xuan.babystore">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
 
     <application
         android:allowBackup="true"
@@ -12,7 +15,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".MainActivity"
+            android:name=".View.MainActivity"
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -20,8 +23,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".IdaView.SublistActivity" />
-        <activity android:name=".IdaView.AudioListActivity"></activity>
+        <activity android:name=".View.SublistActivity" />
+        <activity android:name=".View.AudioListActivity" />
+        <activity android:name=".View.SmartConfigActivity"></activity>
     </application>
 
 </manifest>

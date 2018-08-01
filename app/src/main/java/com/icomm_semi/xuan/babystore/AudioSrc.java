@@ -1,14 +1,11 @@
-package com.icomm_semi.xuan.babystore.HttpControl;
+package com.icomm_semi.xuan.babystore;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.os.Handler;
-import android.os.Message;
 import android.util.Log;
 
-import com.icomm_semi.xuan.babystore.IdaView.AudioItem;
-import com.icomm_semi.xuan.babystore.IdaView.CategoryItem;
-import com.icomm_semi.xuan.babystore.Key;
+import com.icomm_semi.xuan.babystore.View.AudioItem;
+import com.icomm_semi.xuan.babystore.View.CategoryItem;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -40,8 +37,6 @@ public class AudioSrc {
     private ArrayList<CategoryItem> subDataList;
     private ArrayList<AudioItem> audioList;
 
-    private Handler mHandler;
-
     public static AudioSrc getInstance(){
         if (instance == null){
             instance = new AudioSrc();
@@ -64,7 +59,6 @@ public class AudioSrc {
         String ts = String.valueOf(System.currentTimeMillis()/1000);
         Random random = new Random();
         String nonce = String.valueOf(random.nextInt(1000000000));
-        Log.i("rx","Nonce:"+nonce);
         List<NameValuePair> params=new ArrayList<NameValuePair>();
         params.add(new BasicNameValuePair("app_id",Key.IDA_APP_ID));
         params.add(new BasicNameValuePair("device_id",Key.IDA_DEV_ID));
@@ -74,7 +68,6 @@ public class AudioSrc {
         params.add(new BasicNameValuePair("offset","0"));
         params.add(new BasicNameValuePair("limit","20"));
         params.add(new BasicNameValuePair("cat_ids",catId == 0? "[]":("["+catId+"]")));
-        Log.i("rx",params.toString());
 
         UrlEncodedFormEntity entity= null;
         HttpClient client = new DefaultHttpClient();
@@ -117,7 +110,7 @@ public class AudioSrc {
                 InputStream in = entity.getContent();
                 Bitmap mBitmap = BitmapFactory.decodeStream(in);
                 // 向handler发送消息，执行显示图片操作
-                Log.i("rx","Bitmap W:" +mBitmap.getWidth()+"   H:"+mBitmap.getHeight());
+//                Log.i("rx","Bitmap W:" +mBitmap.getWidth()+"   H:"+mBitmap.getHeight());
                 return mBitmap;
             }
 
@@ -146,16 +139,13 @@ public class AudioSrc {
                 categoryItem.icon_url = item.getString("cat_icon_url");
                 categoryItem.id = item.getInt("cat_id");
                 categoryItem.icon = getImageBitmap(categoryItem.icon_url);
-                Log.i("rx","Name:"+categoryItem.name+"  id:"+categoryItem.id);
+//                Log.i("rx","Name:"+categoryItem.name+"  id:"+categoryItem.id);
                 dataList.add(categoryItem);
             }
 
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        Message msg = new Message();
-        msg.obj = dataList;
-        mHandler.sendMessage(msg);
         return dataList;
     }
 
@@ -186,9 +176,6 @@ public class AudioSrc {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        Message msg = new Message();
-        msg.obj = subDataList;
-        mHandler.sendMessage(msg);
         return subDataList;
     }
 
@@ -221,55 +208,48 @@ public class AudioSrc {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        Message msg = new Message();
-        msg.obj = audioList;
-        mHandler.sendMessage(msg);
         return audioList;
     }
 
-    public void getCategoryList(Handler handler){
+    public void getCategoryList(final HttpGetListen listen){
         if(dataList.size() > 0){
-            Message msg = new Message();
-            msg.obj = dataList;
-            mHandler.sendMessage(msg);
+            listen.OnCompletionListener(dataList);
             return;
         }
-
-        mHandler = handler;
         new Thread(new Runnable() {
             @Override
             public void run() {
                 decCategory(getList(0));
+                listen.OnCompletionListener(dataList);
             }
         }).start();
     }
 
-    public void getSubCategoryList(Handler handler, final int catId){
+    public void getSubCategoryList(final int catId,final HttpGetListen listen){
 
         if(subDataList.size() > 0){
             subDataList.clear();
         }
-
-        mHandler = handler;
         new Thread(new Runnable() {
             @Override
             public void run() {
                 decSubCategory(getList(catId));
+                listen.OnCompletionListener(subDataList);
             }
         }).start();
     }
 
-    public void getAudioList(Handler handler,final int catId){
+    public void getAudioList(final int catId, final HttpGetListen listen){
         if(audioList.size() > 0){
             audioList.clear();
         }
-
-        mHandler = handler;
         new Thread(new Runnable() {
             @Override
             public void run() {
                 decAudioList(getList(catId));
+                listen.OnCompletionListener(audioList);
             }
         }).start();
     }
 }
+

@@ -1,4 +1,4 @@
-package com.icomm_semi.xuan.babystore.fragment;
+package com.icomm_semi.xuan.babystore.View.fragment;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -17,13 +17,15 @@ import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.SimpleAdapter;
 
-import com.icomm_semi.xuan.babystore.HttpControl.AudioSrc;
-import com.icomm_semi.xuan.babystore.IdaView.CategoryItem;
-import com.icomm_semi.xuan.babystore.IdaView.SublistActivity;
+import com.icomm_semi.xuan.babystore.AudioSrc;
+import com.icomm_semi.xuan.babystore.HttpGetListen;
+import com.icomm_semi.xuan.babystore.View.CategoryItem;
+import com.icomm_semi.xuan.babystore.View.SublistActivity;
 import com.icomm_semi.xuan.babystore.R;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class AudioViewFragment extends Fragment {
@@ -31,20 +33,13 @@ public class AudioViewFragment extends Fragment {
     private GridView gridView;
     ArrayList<Map<String, Object>> dataList;
     SimpleAdapter adapter;
-    MyHandler mHandler = null;
+    private HttpGetListen mAudioSrcListen;
+    private AudioViewFragmentHandler mHandler;
 
-    class MyHandler extends Handler{
+    class AudioViewFragmentHandler extends Handler{
         @Override
         public void handleMessage(Message msg) {
-            Log.i("rx","refresh grid view");
-            catList = (ArrayList<CategoryItem>) msg.obj;
-            for (int i = 0; i < catList.size(); i++) {
-                Map<String, Object> map=new HashMap<>();
-                map.put("img", catList.get(i).icon);
-                map.put("text",catList.get(i).name);
-                map.put("id",catList.get(i).id);
-                dataList.add(map);
-            }
+            Log.i("rx","AudioviewFragment handle message");
             adapter.notifyDataSetChanged();
         }
     }
@@ -52,7 +47,6 @@ public class AudioViewFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view=inflater.inflate(R.layout.audio_fragment_layout,container,false);
-
         return view;
     }
 
@@ -61,9 +55,8 @@ public class AudioViewFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         gridView = (GridView)view.findViewById(R.id.gridView);
-        mHandler = new MyHandler();
-
-        initData();
+        dataList = new ArrayList<Map<String, Object>>();
+        mHandler = new AudioViewFragmentHandler();
         String[] from={"img","text"};
         int[] to={R.id.gridImage,R.id.gridText};
         adapter=new SimpleAdapter(this.getContext(), dataList, R.layout.sub_list_item, from, to);
@@ -88,21 +81,33 @@ public class AudioViewFragment extends Fragment {
                 Log.i("rx","Click："+ dataList.get(arg2).get("text").toString()+"  ID:"+dataList.get(arg2).get("id"));
                 Intent intent = new Intent();
                 intent.putExtra("id",String.valueOf(dataList.get(arg2).get("id")));
+                intent.putExtra("name",String.valueOf(dataList.get(arg2).get("text")));
                 intent.setClass(getContext(),SublistActivity.class);
                 startActivity(intent);
             }
         });
-    }
 
-    private void initData(){
-        AudioSrc.getInstance().getCategoryList(mHandler);
-        dataList = new ArrayList<Map<String, Object>>();
-    }
+        mAudioSrcListen = new HttpGetListen() {
+            @Override
+            public void OnCompletionListener(List list) {
+                catList = (ArrayList<CategoryItem>) list;
+                Log.i("rx","Item total:"+catList.size());
+                for (int i = 0; i < catList.size(); i++) {
+                    Map<String, Object> map=new HashMap<>();
+                    map.put("img", catList.get(i).icon);
+                    map.put("text",catList.get(i).name);
+                    map.put("id",catList.get(i).id);
+                    dataList.add(map);
+                }
+                mHandler.obtainMessage().sendToTarget();
+            }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-        Log.i("rx","On start");
+            @Override
+            public void OnStartListener(List list) {
+
+            }
+        };
+        AudioSrc.getInstance().getCategoryList(mAudioSrcListen);
     }
 
     @Override
@@ -116,9 +121,5 @@ public class AudioViewFragment extends Fragment {
 
     }
 
-    @Override
-    public void onPause() {
-        Log.i("rx","On onPause");
-        super.onPause();
-    }
+
 }

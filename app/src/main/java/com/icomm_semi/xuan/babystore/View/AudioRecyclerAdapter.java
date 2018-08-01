@@ -1,4 +1,4 @@
-package com.icomm_semi.xuan.babystore.IdaView;
+package com.icomm_semi.xuan.babystore.View;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -12,8 +12,6 @@ import android.widget.TextView;
 
 import com.icomm_semi.xuan.babystore.Controler;
 import com.icomm_semi.xuan.babystore.R;
-
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,7 +43,7 @@ public class AudioRecyclerAdapter extends RecyclerView.Adapter<AudioRecyclerAdap
             @Override
             public void onClick(View view) {
                 Controler.getInstance().downloadFile(list.get(position));
-                Snackbar.make(view,"开始下载..."+list.get(position).name+"   "+list.get(position).play_url,Snackbar.LENGTH_LONG).show();
+//                Snackbar.make(view,"开始下载..."+list.get(position).name+"   "+list.get(position).play_url,Snackbar.LENGTH_LONG).show();
             }
         });
 

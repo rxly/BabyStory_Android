@@ -1,14 +1,12 @@
 package com.icomm_semi.xuan.babystore;
 
-import android.util.Base64;
 import android.util.Log;
 
-import com.icomm_semi.xuan.babystore.IdaView.AudioItem;
+import com.icomm_semi.xuan.babystore.DevInfo;
+import com.icomm_semi.xuan.babystore.View.AudioItem;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.util.ArrayList;
 
 public class DataModel {
 

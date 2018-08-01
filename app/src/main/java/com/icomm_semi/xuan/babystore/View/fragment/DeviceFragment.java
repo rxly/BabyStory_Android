@@ -1,5 +1,6 @@
-package com.icomm_semi.xuan.babystore.fragment;
+package com.icomm_semi.xuan.babystore.View.fragment;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -17,6 +18,8 @@ import android.widget.TextView;
 
 import com.icomm_semi.xuan.babystore.Controler;
 import com.icomm_semi.xuan.babystore.R;
+import com.icomm_semi.xuan.babystore.View.MainActivity;
+import com.icomm_semi.xuan.babystore.View.SmartConfigActivity;
 
 public class DeviceFragment extends Fragment {
     private Controler mControl;
@@ -36,8 +39,6 @@ public class DeviceFragment extends Fragment {
         devToolbar.setTitle("");
         ((AppCompatActivity) getActivity()).setSupportActionBar(devToolbar);
         conText = (TextView)view.findViewById(R.id.conText);
-
-
         super.onViewCreated(view, savedInstanceState);
     }
 
@@ -50,7 +51,12 @@ public class DeviceFragment extends Fragment {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        return super.onOptionsItemSelected(item);
+        if(item.getItemId() == R.id.wifiConfig){
+            Intent intent = new Intent();
+            intent.setClass(getContext(),SmartConfigActivity.class);
+            startActivity(intent);
+        }
+        return true;
     }
 
     public void setConState(int id){

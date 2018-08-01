@@ -1,4 +1,4 @@
-package com.icomm_semi.xuan.babystore.IdaView;
+package com.icomm_semi.xuan.babystore.View;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -6,18 +6,22 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.SimpleAdapter;
+import android.widget.TextView;
 
-import com.icomm_semi.xuan.babystore.HttpControl.AudioSrc;
+import com.icomm_semi.xuan.babystore.AudioSrc;
+import com.icomm_semi.xuan.babystore.HttpGetListen;
 import com.icomm_semi.xuan.babystore.R;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class SublistActivity extends AppCompatActivity {
@@ -26,11 +30,13 @@ public class SublistActivity extends AppCompatActivity {
     private ArrayList<CategoryItem> subCatList = null;
     SimpleAdapter adapter;
     MyHandler mHandler = null;
+    private Toolbar toolbar;
+    private ImageView back;
+    private TextView titleText;
 
     class MyHandler extends Handler{
         @Override
         public void handleMessage(Message msg) {
-            Log.i("rx","refresh grid view");
             subCatList = (ArrayList<CategoryItem>) msg.obj;
             for (int i = 0; i < subCatList.size(); i++) {
                 Map<String, Object> map=new HashMap<>();
@@ -48,6 +54,18 @@ public class SublistActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sublist);
+        toolbar = (Toolbar)findViewById(R.id.sublistToolbar);
+        setSupportActionBar(toolbar);
+        back = (ImageView)toolbar.findViewById(R.id.toolbarBack);
+        back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                SublistActivity.this.finish();
+            }
+        });
+
+        titleText = (TextView)toolbar.findViewById(R.id.sublistTitle);
+        titleText.setText(getIntent().getStringExtra("name"));
 
         gridView = (GridView) findViewById(R.id.childListGrid);
         mHandler = new MyHandler();
@@ -80,6 +98,7 @@ public class SublistActivity extends AppCompatActivity {
 
                 Intent intent = new Intent();
                 intent.putExtra("id",String.valueOf(subDataList.get(arg2).get("id")));
+                intent.putExtra("name",String.valueOf(subDataList.get(arg2).get("text")));
                 intent.setClass(SublistActivity.this, AudioListActivity.class);
                 startActivity(intent);
             }
@@ -89,13 +108,22 @@ public class SublistActivity extends AppCompatActivity {
 
     private void initData(int catId){
         Log.i("rx","Cat id:"+catId);
-        AudioSrc.getInstance().getSubCategoryList(mHandler,catId);
         subDataList = new ArrayList<Map<String, Object>>();
-//        for (int i = 0; i < catList.size(); i++) {
-//            Map<String, Object> map=new HashMap<>();
-//            map.put("img", catList.get(i).icon);
-//            map.put("text",catList.get(i).name);
-//            dataList.add(map);
+        AudioSrc.getInstance().getSubCategoryList(catId, new HttpGetListen() {
+            @Override
+            public void OnCompletionListener(List list) {
+                Message msg = new Message();
+                msg.obj = list;
+                mHandler.sendMessage(msg);
+            }
+
+            @Override
+            public void OnStartListener(List list) {
+
+            }
+        });
+
+
 //        }
     }
 }
