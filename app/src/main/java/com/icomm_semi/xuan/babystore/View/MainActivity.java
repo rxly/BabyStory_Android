@@ -8,12 +8,11 @@ import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
-import android.system.Os;
 import android.util.Log;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-import com.icomm_semi.xuan.babystore.Controler;
+import com.icomm_semi.xuan.babystore.MqttControler;
 import com.icomm_semi.xuan.babystore.DevInfo;
 import com.icomm_semi.xuan.babystore.GlobalInfo;
 import com.icomm_semi.xuan.babystore.R;
@@ -27,7 +26,7 @@ public class MainActivity extends AppCompatActivity {
     private Fragment accountFragment;
     private Fragment fragmentList[]= null;
     private int actionFragment = 0;
-    private Controler mMqttCtrl;
+    private MqttControler mMqttCtrl;
     private Handler mHandler;
     private long startTime = 0;
 
@@ -137,7 +136,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void initControl(){
-        mMqttCtrl = Controler.getInstance();
+        mMqttCtrl = MqttControler.getInstance();
         mMqttCtrl.setHandler(mHandler);
         new Thread(new Runnable() {
             @Override

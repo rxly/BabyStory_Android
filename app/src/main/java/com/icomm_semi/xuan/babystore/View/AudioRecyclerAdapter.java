@@ -10,7 +10,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.icomm_semi.xuan.babystore.Controler;
+import com.icomm_semi.xuan.babystore.MqttControler;
 import com.icomm_semi.xuan.babystore.R;
 
 import java.util.ArrayList;
@@ -42,7 +42,7 @@ public class AudioRecyclerAdapter extends RecyclerView.Adapter<AudioRecyclerAdap
         holder.dowloadIcon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Controler.getInstance().downloadFile(list.get(position));
+                MqttControler.getInstance().downloadFile(list.get(position));
 //                Snackbar.make(view,"开始下载..."+list.get(position).name+"   "+list.get(position).play_url,Snackbar.LENGTH_LONG).show();
             }
         });
@@ -70,7 +70,7 @@ public class AudioRecyclerAdapter extends RecyclerView.Adapter<AudioRecyclerAdap
         ImageView dowloadIcon = null;
         ImageView likeIcon = null;
 
-        private Controler mMqttCtrl;
+        private MqttControler mMqttCtrl;
 
 
         public AudioViewHolder(View itemView) {

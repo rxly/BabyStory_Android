@@ -2,7 +2,6 @@ package com.icomm_semi.xuan.babystore;
 
 import android.os.Handler;
 import android.os.Message;
-import android.util.JsonReader;
 import android.util.Log;
 
 import com.icomm_semi.xuan.babystore.View.AudioItem;
@@ -18,9 +17,9 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
-public class Controler {
+public class MqttControler {
     private final String clientid = "gushiji_demo";
-    private static Controler gInstance = null;
+    private static MqttControler gInstance = null;
     private Handler mHandler;
     private int qos = 1;
 
@@ -36,15 +35,15 @@ public class Controler {
 
     private MqttClient mClient;
 
-    private Controler(){}
+    private MqttControler(){}
 
     public void setHandler(Handler handler) {
         this.mHandler = handler;
     }
 
-    public static Controler getInstance(){
+    public static MqttControler getInstance(){
         if(gInstance == null){
-            gInstance = new Controler();
+            gInstance = new MqttControler();
         }
         return gInstance;
     }

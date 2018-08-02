@@ -103,9 +103,7 @@ public class AudioSrc {
         HttpGet httpget = new HttpGet(url);
         try {
             HttpResponse resp = client.execute(httpget);
-            // 判断是否正确执行
             if (HttpStatus.SC_OK == resp.getStatusLine().getStatusCode()) {
-                // 将返回内容转换为bitmap
                 HttpEntity entity = resp.getEntity();
                 InputStream in = entity.getContent();
                 Bitmap mBitmap = BitmapFactory.decodeStream(in);

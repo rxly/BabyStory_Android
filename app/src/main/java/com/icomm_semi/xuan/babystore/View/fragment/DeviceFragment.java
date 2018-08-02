@@ -16,13 +16,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.icomm_semi.xuan.babystore.Controler;
+import com.icomm_semi.xuan.babystore.MqttControler;
 import com.icomm_semi.xuan.babystore.R;
-import com.icomm_semi.xuan.babystore.View.MainActivity;
 import com.icomm_semi.xuan.babystore.View.SmartConfigActivity;
 
 public class DeviceFragment extends Fragment {
-    private Controler mControl;
+    private MqttControler mControl;
     private TextView conText;
     @Nullable
     @Override

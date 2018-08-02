@@ -52,10 +52,6 @@ public class SmartConfigActivity extends AppCompatActivity {
                 String ssid = connectionInfo.getSSID();
                 ssid = ssid.replaceAll("^\"|\"$", "");
                 Log.i("rx","Get SSID:"+ssid+"Frequence:"+connectionInfo.getFrequency());
-//                if(is5GFreqence(connectionInfo.getFrequency()) ){
-//                    Log.i("rx","Show Dialog");
-//                    changeWifiDialog(MainActivity.this);
-//                }
                 mSSIDEditText.setText(ssid);
                 mSSIDEditText.setEnabled(false);
             }
@@ -230,6 +226,7 @@ public class SmartConfigActivity extends AppCompatActivity {
                 result = "Air Kiss Timeout.";
             }
             Toast.makeText(getApplicationContext(), result, Toast.LENGTH_LONG).show();
+            SmartConfigActivity.this.finish();
         }
 
         @Override
