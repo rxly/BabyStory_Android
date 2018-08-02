@@ -36,8 +36,7 @@ public class AudioRecyclerAdapter extends RecyclerView.Adapter<AudioRecyclerAdap
     @Override
     public void onBindViewHolder(@NonNull AudioViewHolder holder, final int position) {
         holder.nameText.setText(list.get(position).name);
-        holder.content.setText(list.get(position).content);
-        holder.icon.setImageBitmap(list.get(position).icon);
+       // holder.indexText.setText(list.get(position).index);
 
         holder.dowloadIcon.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -65,7 +64,7 @@ public class AudioRecyclerAdapter extends RecyclerView.Adapter<AudioRecyclerAdap
 
     public class AudioViewHolder extends RecyclerView.ViewHolder {
         TextView nameText = null;
-        TextView content = null;
+        TextView indexText = null;
         ImageView icon = null;
         ImageView dowloadIcon = null;
         ImageView likeIcon = null;
@@ -76,16 +75,14 @@ public class AudioRecyclerAdapter extends RecyclerView.Adapter<AudioRecyclerAdap
         public AudioViewHolder(View itemView) {
             super(itemView);
             nameText = itemView.findViewById(R.id.audioName);
-            content = itemView.findViewById(R.id.audioContent);
-
-            icon=itemView.findViewById(R.id.audioIcon);
+           // indexText = itemView.findViewById(R.id.audioIndex);
             dowloadIcon = itemView.findViewById(R.id.audioDownload);
-
             likeIcon = itemView.findViewById(R.id.audioLike);
             likeIcon.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    likeIcon.setImageResource(R.mipmap.like_fill);
+//                    likeIcon.setImageResource(R.mipmap.like_fill);
+                    likeIcon.setBackgroundResource(R.mipmap.like_fill);
                     Snackbar.make(v,"已经添加到收藏列表",Snackbar.LENGTH_LONG).show();
                 }
             });

@@ -31,7 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class AudioSrc {
+public class AudioSrc implements AudioSrcBase {
     private static AudioSrc instance = null;
     private ArrayList<CategoryItem> dataList;
     private ArrayList<CategoryItem> subDataList;

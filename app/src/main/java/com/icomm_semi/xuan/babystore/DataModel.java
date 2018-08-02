@@ -39,8 +39,8 @@ public class DataModel {
             jroot.put("retcode",0);
 
 
-//            s = jroot.toString(1).replace("\\","");
-          s = jroot.toString(1);
+            s = jroot.toString(1).replace("\\","");
+         // s = jroot.toString(1);
             Log.i("rx","Download:");
             Log.i("rx",s);
         } catch (JSONException e) {

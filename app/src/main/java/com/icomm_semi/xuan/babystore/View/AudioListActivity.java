@@ -14,6 +14,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.icomm_semi.xuan.babystore.AudioSrc;
+import com.icomm_semi.xuan.babystore.HttpAudioSrc.HttpSpider;
 import com.icomm_semi.xuan.babystore.HttpGetListen;
 import com.icomm_semi.xuan.babystore.R;
 
@@ -64,7 +65,7 @@ public class AudioListActivity extends AppCompatActivity {
         adapter = new AudioRecyclerAdapter(AudioListActivity.this);
         recyclerView.setAdapter(adapter);
         recyclerView.addItemDecoration(new DividerItemDecoration(this,DividerItemDecoration.VERTICAL));
-        AudioSrc.getInstance().getAudioList(id, new HttpGetListen() {
+        HttpSpider.getInstance().getAudioList(id, new HttpGetListen() {
             @Override
             public void OnCompletionListener(List list) {
                 Message msg = new Message();

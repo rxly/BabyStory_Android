@@ -6,45 +6,22 @@
     android:orientation="horizontal"
     tools:context=".View.MainActivity">
 
-    <ImageView
-        android:id="@+id/audioIcon"
-        android:layout_width="50dp"
-        android:layout_height="match_parent"
-        android:scaleType="fitCenter"
-        android:layout_weight="2"
-        android:contentDescription="TODO" />
 
-    <LinearLayout
-        android:layout_width="230dp"
+    <TextView
+        android:id="@+id/audioName"
+        android:layout_width="286dp"
         android:layout_height="match_parent"
-        android:orientation="vertical"
+        android:layout_gravity="center"
         android:layout_weight="6"
-        >
+        android:ellipsize="marquee"
+        android:focusable="true"
+        android:gravity="left|center"
+        android:singleLine="true"
+        android:textSize="18sp" />
 
-        <TextView
-            android:id="@+id/audioName"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_weight="3"
-            android:ellipsize="marquee"
-            android:singleLine="true"
-            android:focusable="true"
-            android:gravity="center"
-            android:textSize="18sp" />
 
-        <TextView
-            android:id="@+id/audioContent"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_weight="7"
-            android:textSize="10sp"
-            android:gravity="center"
-            android:ellipsize="marquee"
-            android:singleLine="true"
-            android:focusable="true"
-            />
 
-    </LinearLayout>
+
 
     <ImageView
         android:id="@+id/audioLike"
@@ -68,5 +45,8 @@
         android:scaleType="centerInside"
         android:background="@mipmap/download"
         />
+    <TextView
+        android:layout_width="15dp"
+        android:layout_height="match_parent" />
 
 </LinearLayout>

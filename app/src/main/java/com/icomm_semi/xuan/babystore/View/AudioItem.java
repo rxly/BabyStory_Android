@@ -12,4 +12,5 @@ public class AudioItem {
     public int duration;
     public int size;
     public String icon_url;
+    public int index;
 }

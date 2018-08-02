@@ -2,12 +2,15 @@ package com.icomm_semi.xuan.babystore.View.fragment;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.media.Image;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,9 +19,12 @@ import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.SimpleAdapter;
+import android.widget.TextView;
 
 import com.icomm_semi.xuan.babystore.AudioSrc;
+import com.icomm_semi.xuan.babystore.HttpAudioSrc.HttpSpider;
 import com.icomm_semi.xuan.babystore.HttpGetListen;
+import com.icomm_semi.xuan.babystore.View.AudioListActivity;
 import com.icomm_semi.xuan.babystore.View.CategoryItem;
 import com.icomm_semi.xuan.babystore.View.SublistActivity;
 import com.icomm_semi.xuan.babystore.R;
@@ -35,6 +41,8 @@ public class AudioViewFragment extends Fragment {
     SimpleAdapter adapter;
     private HttpGetListen mAudioSrcListen;
     private AudioViewFragmentHandler mHandler;
+    private TextView textTitle;
+    private ImageView backView;
 
     class AudioViewFragmentHandler extends Handler{
         @Override
@@ -53,7 +61,9 @@ public class AudioViewFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
+        Toolbar toolbar = (Toolbar)view.findViewById(R.id.catToolbar);
+        toolbar.setTitle("");
+        ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
         gridView = (GridView)view.findViewById(R.id.gridView);
         dataList = new ArrayList<Map<String, Object>>();
         mHandler = new AudioViewFragmentHandler();
@@ -80,9 +90,9 @@ public class AudioViewFragment extends Fragment {
                                     long arg3) {
                 Log.i("rx","Click："+ dataList.get(arg2).get("text").toString()+"  ID:"+dataList.get(arg2).get("id"));
                 Intent intent = new Intent();
-                intent.putExtra("id",String.valueOf(dataList.get(arg2).get("id")));
+                intent.putExtra("id",String.valueOf(arg2));
                 intent.putExtra("name",String.valueOf(dataList.get(arg2).get("text")));
-                intent.setClass(getContext(),SublistActivity.class);
+                intent.setClass(getContext(),AudioListActivity.class);
                 startActivity(intent);
             }
         });
@@ -96,7 +106,7 @@ public class AudioViewFragment extends Fragment {
                     Map<String, Object> map=new HashMap<>();
                     map.put("img", catList.get(i).icon);
                     map.put("text",catList.get(i).name);
-                    map.put("id",catList.get(i).id);
+                   // map.put("id",catList.get(i).id);
                     dataList.add(map);
                 }
                 mHandler.obtainMessage().sendToTarget();
@@ -107,7 +117,8 @@ public class AudioViewFragment extends Fragment {
 
             }
         };
-        AudioSrc.getInstance().getCategoryList(mAudioSrcListen);
+        //AudioSrc.getInstance().getCategoryList(mAudioSrcListen);
+        HttpSpider.getInstance().getCategoryList(mAudioSrcListen);
     }
 
     @Override

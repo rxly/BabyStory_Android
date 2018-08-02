@@ -9,4 +9,5 @@ public class CategoryItem {
     public Bitmap icon;
     public int id;
     public int cat_count;
+    public String listUrl;
 }
